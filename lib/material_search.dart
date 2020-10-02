@@ -314,7 +314,7 @@ class _MaterialSearchInputState<T> extends State<MaterialSearchInput<T>> {
         key: _formFieldKey,
         validator: widget.validator,
         onSaved: widget.onSaved,
-        autovalidate: autovalidate,
+        autovalidateMode: AutovalidateMode.always,
         builder: (FormFieldState<T> field) {
           return new InputDecorator(
             baseStyle: valueStyle,
