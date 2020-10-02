@@ -237,7 +237,7 @@ class MaterialSearchInput<T> extends StatefulWidget {
     Key key,
     this.onSaved,
     this.validator,
-    this.autovalidate,
+//    this.autovalidate,
     this.placeholder,
     this.formatter,
     this.results,
@@ -249,7 +249,7 @@ class MaterialSearchInput<T> extends StatefulWidget {
 
   final FormFieldSetter<T> onSaved;
   final FormFieldValidator<T> validator;
-  final bool autovalidate;
+//  final bool autovalidate;
   final String placeholder;
   final FormFieldFormatter<T> formatter;
 
@@ -297,9 +297,9 @@ class _MaterialSearchInputState<T> extends State<MaterialSearchInput<T>> {
       });
   }
 
-  bool get autovalidate {
+/*  bool get autovalidate {
     return widget.autovalidate ?? Form.of(context)?.widget?.autovalidate ?? false;
-  }
+  } */
 
   bool _isEmpty(field) {
     return field.value == null;
