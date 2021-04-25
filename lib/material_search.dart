@@ -14,22 +14,22 @@ class MaterialSearchResult<T> extends StatelessWidget {
     Key key,
     this.value,
     this.text,
-    this.icon,
+  //  this.icon,
   }) : super(key: key);
 
   final T value;
   final String text;
-  final IconData? icon;
+ // final IconData? icon;
 
   @override
   Widget build(BuildContext context) {
     return new Container(
       child: new Row(
         children: <Widget>[
-          new Container(width: 70.0, child: new Icon(icon)),
+      //    new Container(width: 70.0, child: new Icon(icon)),
           new Expanded(
               child:
-                  new Text(text, style: Theme.of(context).textTheme.subhead)),
+                  new Text(text, style: Theme.of(context).textTheme.subtitle1)),
         ],
       ),
       height: 56.0,
@@ -39,8 +39,8 @@ class MaterialSearchResult<T> extends StatelessWidget {
 
 class MaterialSearch<T> extends StatefulWidget {
   MaterialSearch({
-    Key key,
-    this.placeholder,
+    Key? key,
+    this.placeholder = '',
     this.results,
     this.getResults,
     this.filter,
@@ -64,16 +64,16 @@ class MaterialSearch<T> extends StatefulWidget {
 
   final String placeholder;
 
-  final List<MaterialSearchResult<T>> results;
-  final MaterialResultsFinder getResults;
-  final MaterialSearchFilter<T> filter;
-  final MaterialSearchSort<T> sort;
+  final List<MaterialSearchResult<T>>? results;
+  final MaterialResultsFinder? getResults;
+  final MaterialSearchFilter<T>? filter;
+  final MaterialSearchSort<T>? sort;
   final int limit;
-  final ValueChanged<T> onSelect;
-  final OnSubmit onSubmit;
+  final ValueChanged<T>? onSelect;
+  final OnSubmit? onSubmit;
   final Color barBackgroundColor;
   final Color iconColor;
-  final Widget leading;
+  final Widget? leading;
 
   @override
   _MaterialSearchState<T> createState() => new _MaterialSearchState<T>();
@@ -120,8 +120,8 @@ class _MaterialSearchState<T> extends State<MaterialSearch> {
       });
     }
 
-    if (_resultsTimer != null && _resultsTimer.isActive) {
-      _resultsTimer.cancel();
+    if (_resultsTimer != null && _resultsTimer!.isActive) {
+      _resultsTimer!.cancel();
     }
 
     _resultsTimer = new Timer(new Duration(milliseconds: 400), () async {
@@ -134,7 +134,7 @@ class _MaterialSearchState<T> extends State<MaterialSearch> {
       });
 
       //TODO: debounce widget.results too
-      var results = await widget.getResults(_criteria);
+      var results = await widget.getResults!(_criteria);
 
       if (!mounted) {
         return;
@@ -142,7 +142,7 @@ class _MaterialSearchState<T> extends State<MaterialSearch> {
 
       setState(() {
         _loading = false;
-        _results = results;
+        _results = results as List<MaterialSearchResult<T>>;
       });
     });
   }
@@ -158,7 +158,7 @@ class _MaterialSearchState<T> extends State<MaterialSearch> {
     var results =
         (widget.results ?? _results).where((MaterialSearchResult result) {
       if (widget.filter != null) {
-        return widget.filter(result.value, _criteria);
+        return widget.filter!(result.value, _criteria);
       }
       //only apply default filter if used the `results` option
       //because getResults may already have applied some filter if `filter` option was omited.
@@ -170,7 +170,7 @@ class _MaterialSearchState<T> extends State<MaterialSearch> {
     }).toList();
 
     if (widget.sort != null) {
-      results.sort((a, b) => widget.sort(a.value, b.value, _criteria));
+      results.sort((a, b) => widget.sort!(a.value, b.value, _criteria));
     }
 
     results = results.take(widget.limit).toList();
@@ -188,10 +188,10 @@ class _MaterialSearchState<T> extends State<MaterialSearch> {
           autofocus: true,
           decoration:
               new InputDecoration.collapsed(hintText: widget.placeholder),
-          style: Theme.of(context).textTheme.title,
+          style: Theme.of(context).textTheme.headline6,
           onSubmitted: (String value) {
             if (widget.onSubmit != null) {
-              widget.onSubmit(value);
+              widget.onSubmit!(value);
             }
           },
         ),
@@ -217,7 +217,7 @@ class _MaterialSearchState<T> extends State<MaterialSearch> {
               child: new Column(
                 children: results.map((MaterialSearchResult result) {
                   return new InkWell(
-                    onTap: () => widget.onSelect(result.value),
+                    onTap: () => widget.onSelect!(result.value),
                     child: result,
                   );
                 }).toList(),
@@ -229,11 +229,11 @@ class _MaterialSearchState<T> extends State<MaterialSearch> {
 
 class _MaterialSearchPageRoute<T> extends MaterialPageRoute<T> {
   _MaterialSearchPageRoute({
-    @required WidgetBuilder builder,
+    required WidgetBuilder builder,
     RouteSettings settings: const RouteSettings(),
     maintainState: true,
     bool fullscreenDialog: false,
-  })  : assert(builder != null),
+  })  : //assert(builder != null),
         super(
             builder: builder,
             settings: settings,
@@ -243,16 +243,16 @@ class _MaterialSearchPageRoute<T> extends MaterialPageRoute<T> {
 
 class MaterialSearchInput<T> extends StatefulWidget {
   MaterialSearchInput({
-    Key key,
-    this.onSaved,
-    this.validator,
-    this.placeholder,
-    this.formatter,
-    this.results,
-    this.getResults,
-    this.filter,
-    this.sort,
-    this.onSelect,
+    Key? key,
+    required this.onSaved,
+    required this.validator,
+    required this.placeholder,
+    required this.formatter,
+    required this.results,
+    required this.getResults,
+    required this.filter,
+    required this.sort,
+    required this.onSelect,
   });
 
   final FormFieldSetter<T> onSaved;
@@ -261,10 +261,10 @@ class MaterialSearchInput<T> extends StatefulWidget {
   final FormFieldFormatter<T> formatter;
 
   final List<MaterialSearchResult<T>> results;
-  final MaterialResultsFinder getResults;
-  final MaterialSearchFilter<T> filter;
-  final MaterialSearchSort<T> sort;
-  final ValueChanged<T> onSelect;
+  final MaterialResultsFinder? getResults;
+  final MaterialSearchFilter<T>? filter;
+  final MaterialSearchSort<T>? sort;
+  final ValueChanged<T>? onSelect;
 
   @override
   _MaterialSearchInputState<T> createState() =>
@@ -299,8 +299,8 @@ class _MaterialSearchInputState<T> extends State<MaterialSearchInput<T>> {
         .push(_buildMaterialSearchPage(context))
         .then((dynamic value) {
       if (value != null) {
-        _formFieldKey.currentState.didChange(value);
-        widget.onSelect(value);
+        _formFieldKey.currentState?.didChange(value);
+        widget.onSelect!(value);
       }
     });
   }
@@ -310,7 +310,7 @@ class _MaterialSearchInputState<T> extends State<MaterialSearchInput<T>> {
   }
 
   Widget build(BuildContext context) {
-    final TextStyle valueStyle = Theme.of(context).textTheme.subhead;
+    final TextStyle? valueStyle = Theme.of(context).textTheme.subtitle1;
 
     return new InkWell(
       onTap: () => _showMaterialSearch(context),
@@ -331,8 +331,8 @@ class _MaterialSearchInputState<T> extends State<MaterialSearchInput<T>> {
             child: _isEmpty(field)
                 ? null
                 : new Text(
-                    widget.formatter != null
-                        ? widget.formatter(field.value)
+                    widget.formatter != null && field.value != null
+                        ? widget.formatter(field!.value!)
                         : field.value.toString(),
                     style: valueStyle),
           );
