@@ -332,7 +332,7 @@ class _MaterialSearchInputState<T> extends State<MaterialSearchInput<T>> {
                 ? null
                 : new Text(
                     widget.formatter != null && field.value != null
-                        ? widget.formatter(field!.value!)
+                        ? widget.formatter(field.value!)
                         : field.value.toString(),
                     style: valueStyle),
           );
