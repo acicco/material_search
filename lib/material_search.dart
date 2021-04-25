@@ -11,22 +11,22 @@ typedef void OnSubmit(String value);
 
 class MaterialSearchResult<T> extends StatelessWidget {
   const MaterialSearchResult({
-    Key key,
-    this.value,
-    this.text,
-  //  this.icon,
+    Key? key,
+    required this.value,
+    required this.text,
+    //  this.icon,
   }) : super(key: key);
 
   final T value;
   final String text;
- // final IconData? icon;
+  // final IconData? icon;
 
   @override
   Widget build(BuildContext context) {
     return new Container(
       child: new Row(
         children: <Widget>[
-      //    new Container(width: 70.0, child: new Icon(icon)),
+          //    new Container(width: 70.0, child: new Icon(icon)),
           new Expanded(
               child:
                   new Text(text, style: Theme.of(context).textTheme.subtitle1)),
@@ -233,7 +233,7 @@ class _MaterialSearchPageRoute<T> extends MaterialPageRoute<T> {
     RouteSettings settings: const RouteSettings(),
     maintainState: true,
     bool fullscreenDialog: false,
-  })  : //assert(builder != null),
+  }) : //assert(builder != null),
         super(
             builder: builder,
             settings: settings,
